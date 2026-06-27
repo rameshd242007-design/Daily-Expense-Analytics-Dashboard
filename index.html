@@ -6,7 +6,6 @@
 <title>Daily Expense Analytics Dashboard</title>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -23,17 +22,17 @@ padding:30px;
 .container{
 max-width:1200px;
 margin:auto;
-background:rgba(255,255,255,0.15);
+background:rgba(255,255,255,.15);
 backdrop-filter:blur(10px);
 padding:30px;
 border-radius:20px;
-border:2px solid rgba(255,255,255,0.3);
-box-shadow:0 10px 30px rgba(0,0,0,0.3);
+border:2px solid rgba(255,255,255,.3);
+box-shadow:0 10px 30px rgba(0,0,0,.3);
 }
 
 h1{
 text-align:center;
-color:white;
+color:#fff;
 margin-bottom:30px;
 font-size:36px;
 }
@@ -55,25 +54,17 @@ font-size:16px;
 outline:none;
 }
 
-input:focus,
-select:focus{
-border-color:#4f46e5;
-}
-
 button{
 padding:12px 25px;
 background:#4f46e5;
-color:white;
+color:#fff;
 border:none;
 border-radius:10px;
-font-size:16px;
 cursor:pointer;
-transition:.3s;
 }
 
 button:hover{
 background:#312e81;
-transform:scale(1.05);
 }
 
 .summary{
@@ -87,50 +78,37 @@ margin-bottom:30px;
 padding:25px;
 border-radius:15px;
 text-align:center;
-color:white;
-border:2px solid rgba(255,255,255,0.3);
-box-shadow:0 5px 15px rgba(0,0,0,0.2);
+color:#fff;
 }
 
 .income{
-background:linear-gradient(135deg,#16a34a,#22c55e);
+background:#16a34a;
 }
 
 .expense{
-background:linear-gradient(135deg,#dc2626,#ef4444);
+background:#dc2626;
 }
 
 .balance{
-background:linear-gradient(135deg,#2563eb,#3b82f6);
-}
-
-.card h2{
-margin-bottom:10px;
+background:#2563eb;
 }
 
 .card p{
 font-size:28px;
 font-weight:bold;
-}
-
-.table-container{
-overflow-x:auto;
+margin-top:10px;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-background:white;
-border-radius:15px;
-overflow:hidden;
-border:2px solid #ddd;
+background:#fff;
 }
 
 th{
 background:#4f46e5;
-color:white;
+color:#fff;
 padding:15px;
-font-size:16px;
 }
 
 td{
@@ -139,17 +117,20 @@ text-align:center;
 border-bottom:1px solid #ddd;
 }
 
-tr:hover{
-background:#f3f4f6;
+.delete-btn{
+background:#dc2626;
+padding:6px 12px;
+border-radius:6px;
+color:white;
+border:none;
+cursor:pointer;
 }
 
 .footer{
 margin-top:20px;
 text-align:center;
 color:white;
-font-size:14px;
 }
-
 </style>
 </head>
 
@@ -195,8 +176,6 @@ Add Transaction
 
 </div>
 
-<div class="table-container">
-
 <table>
 
 <thead>
@@ -204,6 +183,7 @@ Add Transaction
 <th>Type</th>
 <th>Category</th>
 <th>Amount</th>
+<th>Action</th>
 </tr>
 </thead>
 
@@ -211,8 +191,6 @@ Add Transaction
 </tbody>
 
 </table>
-
-</div>
 
 <div class="footer">
 © 2026 Daily Expense Analytics Dashboard
@@ -222,42 +200,70 @@ Add Transaction
 
 <script>
 
-let income=0;
-let expense=0;
+let income = 0;
+let expense = 0;
 
 function addTransaction(){
 
-let amount=Number(document.getElementById("amount").value);
-let type=document.getElementById("type").value;
-let category=document.getElementById("category").value;
+const amountInput = document.getElementById("amount");
+const categoryInput = document.getElementById("category");
 
-if(amount==="" || category===""){
-alert("Please fill all fields");
+const amount = Number(amountInput.value);
+const type = document.getElementById("type").value;
+const category = categoryInput.value.trim();
+
+if(amount <= 0 || category === ""){
+alert("Please enter valid details");
 return;
 }
 
-let row=`
-<tr>
+const row=document.createElement("tr");
+
+row.innerHTML=`
 <td>${type}</td>
 <td>${category}</td>
 <td>₹${amount}</td>
-</tr>
+<td>
+<button class="delete-btn" onclick="deleteTransaction(this,'${type}',${amount})">
+Delete
+</button>
+</td>
 `;
 
-document.getElementById("tableBody").innerHTML += row;
+document.getElementById("tableBody").appendChild(row);
 
 if(type==="Income"){
-income += amount;
+income+=amount;
 }else{
-expense += amount;
+expense+=amount;
 }
+
+updateSummary();
+
+amountInput.value="";
+categoryInput.value="";
+}
+
+function deleteTransaction(btn,type,amount){
+
+btn.parentElement.parentElement.remove();
+
+if(type==="Income"){
+income-=amount;
+}else{
+expense-=amount;
+}
+
+updateSummary();
+
+}
+
+function updateSummary(){
 
 document.getElementById("income").innerText="₹"+income;
 document.getElementById("expense").innerText="₹"+expense;
 document.getElementById("balance").innerText="₹"+(income-expense);
 
-document.getElementById("amount").value="";
-document.getElementById("category").value="";
 }
 
 </script>
